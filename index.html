@@ -96,15 +96,43 @@
   table.piv thead tr:nth-child(2) th:first-child { text-align: left; }
   table.piv .vh { color: #fca5a5; }
   table.piv .ph { color: #86efac; }
-  table.piv tbody td { padding: 7px 7px; text-align: right; border-bottom: 1px solid #f1f5f9; transition: background 0.1s; }
+  table.piv tbody td { padding: 7px 7px; text-align: right; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.1s; }
   table.piv tbody td:first-child { text-align: left; font-weight: 600; color: #334155; }
-  table.piv tbody tr:last-child td { background: #f1f5f9; font-weight: 700; border-bottom: none; }
+  table.piv tbody tr:hover td { background: #f0f9ff; }
+  table.piv tbody tr.sel td { background: #e0f2fe; }
+  table.piv tbody tr.sel td:first-child { color: #0369a1; }
+  table.piv tbody tr:last-child td { background: #f1f5f9; font-weight: 700; border-bottom: none; cursor: default; }
   table.piv tbody tr:last-child td:first-child { color: #1a3a5c; }
+  table.piv tbody tr:last-child:hover td { background: #f1f5f9; }
   .vv { color: #dc2626; }
   .pv2 { color: #16a34a; }
   .tv { color: #0f172a; font-weight: 700; }
   .cero { color: #cbd5e1; }
   .excl-notice { font-size: 11px; color: #94a3b8; margin-bottom: 8px; font-style: italic; }
+  .drill { background: white; border-radius: 12px; border: 2px solid #0ea5e9; padding: 14px; margin-bottom: 14px; box-shadow: 0 2px 12px rgba(14,165,233,0.12); }
+  .drill-hdr { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+  .drill-title { font-size: 14px; font-weight: 800; color: #0369a1; }
+  .drill-sub { font-size: 11px; color: #64748b; margin-top: 2px; }
+  .drill-close { padding: 5px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 12px; cursor: pointer; background: white; color: #64748b; font-weight: 600; white-space: nowrap; }
+  .drill-close:hover { background: #f1f5f9; }
+  .prov-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f1f5f9; cursor: pointer; }
+  .prov-item:last-child { border-bottom: none; }
+  .prov-item:hover .prov-nm { color: #2563eb; text-decoration: underline; }
+  .prov-nm { font-size: 12px; font-weight: 700; color: #334155; transition: color 0.15s; }
+  .prov-rut { font-size: 10px; color: #94a3b8; margin-top: 1px; }
+  .prov-amts { display: flex; gap: 10px; align-items: center; text-align: right; }
+  .prov-col { display: flex; flex-direction: column; align-items: flex-end; }
+  .prov-col .plbl { font-size: 9px; color: #94a3b8; font-weight: 600; text-transform: uppercase; }
+  .prov-col .pval { font-size: 12px; font-weight: 800; }
+  .pval.r { color: #dc2626; }
+  .pval.g { color: #16a34a; }
+  .pval.d { color: #0f172a; }
+  .pval.z { color: #cbd5e1; font-weight: 400; font-size: 11px; }
+  .drill-totals { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; }
+  .dt { background: #f8fafc; border-radius: 8px; padding: 10px; }
+  .dt .lbl { font-size: 9px; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 3px; }
+  .dt .val { font-size: 15px; font-weight: 800; }
+  .hint-row { font-size: 11px; color: #94a3b8; margin-bottom: 8px; font-style: italic; }
 </style>
 </head>
 <body>
@@ -159,6 +187,17 @@
       <button class="hm-btn on" id="hm-btn" onclick="toggleHM()">Mapa de calor: ON</button>
     </div>
     <div id="resumen-content"></div>
+    <div id="drill" class="drill" style="display:none">
+      <div class="drill-hdr">
+        <div>
+          <div class="drill-title" id="drill-title"></div>
+          <div class="drill-sub" id="drill-sub"></div>
+        </div>
+        <button class="drill-close" onclick="closeDrill()">✕ Cerrar</button>
+      </div>
+      <div id="drill-body"></div>
+      <div class="drill-totals" id="drill-totals"></div>
+    </div>
   </div>
   <div id="utime" class="utime"></div>
 </div>
@@ -206,10 +245,8 @@ function onExclKey(e,tipo){
 }
 
 function removeExcl(tipo,i){
-  if(tipo==='prov') exclProv.splice(i,1);
-  else exclCat.splice(i,1);
-  renderTags(tipo);
-  renderResumen();
+  if(tipo==='prov') exclProv.splice(i,1); else exclCat.splice(i,1);
+  renderTags(tipo); renderResumen();
 }
 
 function renderTags(tipo){
@@ -266,6 +303,8 @@ async function meta(){
   }catch(e){}
 }
 
+var lastRowData=[];
+
 function renderResumen(){
   if(!all.length){document.getElementById('resumen-content').innerHTML='<div class="empty">Cargando...</div>';return;}
   var VCOLS=['120+','90-120','60-90','30-60','7-30','0-7'];
@@ -289,23 +328,23 @@ function renderResumen(){
   VCOLS.concat(PCOLS).forEach(function(c){totCol[c]=0;});
   var gtV=0,gtP=0;
 
-  var rowData=catList.map(function(cat){
+  lastRowData=catList.map(function(cat){
     var totV=0,totP=0,cols={};
     VCOLS.forEach(function(c){ var v=cats[cat][c]||0; cols[c]=v; totV+=v; totCol[c]+=v; });
     PCOLS.forEach(function(c){ var v=cats[cat][c]||0; cols[c]=v; totP+=v; totCol[c]+=v; });
     gtV+=totV; gtP+=totP;
     return {cat:cat,cols:cols,totV:totV,totP:totP,tot:totV+totP};
   });
-  rowData.sort(function(a,b){return a.tot-b.tot;});
+  lastRowData.sort(function(a,b){return a.tot-b.tot;});
 
   var maxV=0;
-  rowData.forEach(function(rd){ VCOLS.forEach(function(c){ if(rd.cols[c]<0&&Math.abs(rd.cols[c])>maxV) maxV=Math.abs(rd.cols[c]); }); });
+  lastRowData.forEach(function(rd){ VCOLS.forEach(function(c){ if(rd.cols[c]<0&&Math.abs(rd.cols[c])>maxV) maxV=Math.abs(rd.cols[c]); }); });
 
   var notices=[];
   if(exclProvCount>0&&exclProv.length) notices.push(exclProvCount+' docs de proveedores: '+exclProv.join(', '));
   if(exclCatRows>0&&exclCat.length) notices.push(exclCatRows+' docs de categorías: '+exclCat.join(', '));
   var h=notices.length?'<div class="excl-notice">Excluidos: '+notices.join(' | ')+'</div>':'';
-
+  h+='<div class="hint-row">Toca una fila para ver el detalle de proveedores</div>';
   h+='<div class="tbl-wrap"><table class="piv"><thead><tr>';
   h+='<th rowspan="2">Categoría</th>';
   h+='<th colspan="'+VCOLS.length+'" style="text-align:center;border-bottom:1px solid rgba(255,255,255,0.15)">VENCIDO</th>';
@@ -313,10 +352,10 @@ function renderResumen(){
   h+='<th rowspan="2">Total</th></tr><tr>';
   VCOLS.forEach(function(c){h+='<th class="vh">'+c+'</th>';});
   PCOLS.forEach(function(c){h+='<th class="ph">'+c+'</th>';});
-  h+='</tr></thead><tbody>';
+  h+='</tr></thead><tbody id="pivot-body">';
 
-  rowData.forEach(function(rd){
-    h+='<tr><td>'+rd.cat+'</td>';
+  lastRowData.forEach(function(rd,i){
+    h+='<tr onclick="drillCat('+i+')" id="prow-'+i+'"><td>'+rd.cat+'</td>';
     VCOLS.forEach(function(c){
       var v=rd.cols[c]||0;
       var bg=v<0?heatBg(Math.abs(v),maxV):'';
@@ -339,6 +378,78 @@ function renderResumen(){
   '</div>';
 
   document.getElementById('resumen-content').innerHTML=h;
+  closeDrill();
+}
+
+function drillCat(i){
+  var rd=lastRowData[i];
+  if(!rd) return;
+
+  document.querySelectorAll('#pivot-body tr').forEach(function(r,j){
+    r.className=j===i?'sel':'';
+  });
+
+  var cat=rd.cat;
+  var provData={};
+  all.forEach(function(r){
+    if(isExclProv(r['NOMBRE O RAZON SOCIAL'])) return;
+    if((r['ATRIB_1']||'')!==cat) return;
+    var rut=fmtRut(r['RUT COMPLETO']||r['RUT']||'');
+    var nm=r['NOMBRE O RAZON SOCIAL']||'';
+    var sal=num(r['SALDO']);
+    var est=(r['ESTADO']||'').toUpperCase().trim();
+    if(!provData[rut]) provData[rut]={nm:nm,rut:rut,venc:0,pv:0};
+    if(est==='VENCIDO') provData[rut].venc+=sal;
+    else if(est==='POR VENCER') provData[rut].pv+=sal;
+  });
+
+  var provs=Object.values(provData).filter(function(p){return p.venc!==0||p.pv!==0;});
+  provs.sort(function(a,b){return (a.venc+a.pv)-(b.venc+b.pv);});
+
+  var tV=provs.reduce(function(s,p){return s+p.venc;},0);
+  var tP=provs.reduce(function(s,p){return s+p.pv;},0);
+  var tT=tV+tP;
+
+  document.getElementById('drill-title').textContent=cat;
+  document.getElementById('drill-sub').textContent=provs.length+' proveedores con saldo';
+
+  var body=provs.map(function(p){
+    var tot=p.venc+p.pv;
+    return '<div class="prov-item" onclick="irAProveedor(\''+p.nm.replace(/'/g,"\\'")+'\')" title="Ver ficha de '+p.nm+'">'+
+      '<div><div class="prov-nm">'+p.nm+'</div><div class="prov-rut">'+p.rut+'</div></div>'+
+      '<div class="prov-amts">'+
+        '<div class="prov-col"><div class="plbl">Vencido</div><div class="pval '+(p.venc!==0?'r':'z')+'">'+
+          (p.venc!==0?fmt(p.venc):'—')+'</div></div>'+
+        '<div class="prov-col"><div class="plbl">Por vencer</div><div class="pval '+(p.pv!==0?'g':'z')+'">'+
+          (p.pv!==0?fmt(p.pv):'—')+'</div></div>'+
+        '<div class="prov-col"><div class="plbl">Total</div><div class="pval '+(tot<0?'r':tot>0?'g':'z')+'">'+
+          (tot!==0?fmt(tot):'—')+'</div></div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+
+  document.getElementById('drill-body').innerHTML=body||'<div class="empty" style="padding:20px">Sin proveedores con saldo</div>';
+  document.getElementById('drill-totals').innerHTML=
+    '<div class="dt"><div class="lbl">Vencido</div><div class="val" style="color:#dc2626">'+fmt(tV)+'</div></div>'+
+    '<div class="dt"><div class="lbl">Por Vencer</div><div class="val" style="color:#16a34a">'+fmt(tP)+'</div></div>'+
+    '<div class="dt"><div class="lbl">Total</div><div class="val" style="color:#0f172a">'+fmt(tT)+'</div></div>';
+
+  document.getElementById('drill').style.display='block';
+  setTimeout(function(){
+    document.getElementById('drill').scrollIntoView({behavior:'smooth',block:'nearest'});
+  },100);
+}
+
+function irAProveedor(nombre){
+  showTab('buscar');
+  document.getElementById('q').value=nombre;
+  buscar();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function closeDrill(){
+  document.getElementById('drill').style.display='none';
+  document.querySelectorAll('#pivot-body tr').forEach(function(r){r.className='';});
 }
 
 function onQ(){
