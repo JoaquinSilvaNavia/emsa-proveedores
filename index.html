@@ -15,9 +15,9 @@
   .dot.err { background: #f87171; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
   .nav { display: flex; background: #12294a; }
-  .nav-btn { flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.6); cursor: pointer; border-bottom: 3px solid transparent; }
+  .nav-btn { flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.5); cursor: pointer; border-bottom: 3px solid transparent; }
   .nav-btn.active { color: white; border-bottom-color: #4ade80; }
-  .wrap { max-width: 600px; margin: 0 auto; padding: 14px; }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 14px; }
   .sbox { background: white; border-radius: 12px; padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
   .sbox label { font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 8px; }
   .srow { display: flex; gap: 8px; }
@@ -29,7 +29,7 @@
   .fbtn.active { background: #1a3a5c; color: white; border-color: #1a3a5c; }
   .fbtn.venc.active { background: #dc2626; border-color: #dc2626; }
   .fbtn.pv.active { background: #16a34a; border-color: #16a34a; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
   .card { background: white; border-radius: 12px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
   .card .lbl { font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 5px; }
   .card .amt { font-size: 18px; font-weight: 800; }
@@ -74,23 +74,31 @@
   .ley-dot { width: 10px; height: 10px; border-radius: 2px; }
   .ley-dot.r { background: #dc2626; }
   .ley-dot.g { background: #16a34a; }
-  /* RESUMEN */
-  .resumen-wrap { overflow-x: auto; margin-bottom: 14px; }
-  .resumen-title { font-size: 13px; font-weight: 700; color: #1a3a5c; margin-bottom: 10px; padding: 12px 14px; background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center; }
-  .resumen-title span { font-size: 11px; color: #64748b; font-weight: 400; }
-  table.pivot { width: 100%; border-collapse: collapse; font-size: 11px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-  table.pivot th { background: #1a3a5c; color: white; padding: 8px 6px; text-align: right; font-weight: 600; white-space: nowrap; font-size: 10px; }
-  table.pivot th:first-child { text-align: left; min-width: 110px; }
-  table.pivot td { padding: 7px 6px; text-align: right; border-bottom: 1px solid #f1f5f9; font-size: 10px; white-space: nowrap; }
-  table.pivot td:first-child { text-align: left; font-weight: 600; color: #334155; font-size: 10px; }
-  table.pivot tr:last-child td { border-bottom: none; background: #f8fafc; font-weight: 700; font-size: 11px; }
-  table.pivot tr:hover td { background: #f8fafc; }
-  table.pivot tr:last-child td:first-child { color: #1a3a5c; }
-  .v-col { color: #dc2626; }
-  .p-col { color: #1d4ed8; }
-  .t-col { color: #0f172a; font-weight: 700; }
-  .sep-th { background: #0f2942 !important; font-size: 9px; letter-spacing: 0.3px; }
+  .res-top { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .res-input { padding: 8px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 13px; background: white; min-width: 180px; flex: 1; }
+  .res-input:focus { outline: none; border-color: #2563eb; }
+  .hm-btn { padding: 8px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; background: white; color: #64748b; white-space: nowrap; }
+  .hm-btn.on { border-color: #1a3a5c; color: #1a3a5c; background: #eef2f7; }
+  .tbl-wrap { overflow-x: auto; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 14px; }
+  table.piv { width: 100%; border-collapse: collapse; background: white; font-size: 11px; }
+  table.piv thead tr:first-child th { background: #1a3a5c; color: white; padding: 8px 7px; font-weight: 600; font-size: 10px; text-align: right; white-space: nowrap; }
+  table.piv thead tr:first-child th:first-child { text-align: left; min-width: 115px; }
+  table.piv thead tr:nth-child(2) th { background: #12294a; padding: 6px 7px; font-size: 10px; font-weight: 500; text-align: right; }
+  table.piv thead tr:nth-child(2) th:first-child { text-align: left; }
+  table.piv .vh { color: #fca5a5; }
+  table.piv .ph { color: #86efac; }
+  table.piv tbody td { padding: 7px 7px; text-align: right; border-bottom: 1px solid #f1f5f9; transition: background 0.1s; }
+  table.piv tbody td:first-child { text-align: left; font-weight: 600; color: #334155; }
+  table.piv tbody tr:last-child td { background: #f1f5f9; font-weight: 700; border-bottom: none; font-size: 11px; }
+  table.piv tbody tr:last-child td:first-child { color: #1a3a5c; }
+  .vv { color: #dc2626; }
+  .pv2 { color: #16a34a; }
+  .tv { color: #0f172a; font-weight: 700; }
   .cero { color: #cbd5e1; }
+  .leg2 { display: flex; align-items: center; gap: 8px; font-size: 10px; color: #94a3b8; margin-bottom: 10px; }
+  .leg-bar { display: flex; gap: 2px; }
+  .leg-sq { width: 12px; height: 12px; border-radius: 2px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
 </style>
 </head>
 <body>
@@ -103,7 +111,6 @@
   <div class="nav-btn" id="btn-resumen" onclick="showTab('resumen')">Resumen general</div>
 </div>
 <div class="wrap">
-  <!-- TAB BUSCAR -->
   <div id="tab-buscar">
     <div class="sbox">
       <label>Buscar proveedor</label>
@@ -120,29 +127,63 @@
     </div>
     <div id="content"></div>
   </div>
-  <!-- TAB RESUMEN -->
   <div id="tab-resumen" style="display:none">
+    <div class="res-top">
+      <input class="res-input" type="text" id="res-filtro" placeholder="Filtrar categoría..." oninput="renderResumen()"/>
+      <button class="hm-btn on" id="hm-btn" onclick="toggleHM()">Mapa de calor: ON</button>
+    </div>
+    <div class="leg2" id="leg2">
+      <span>Intensidad deuda vencida:</span>
+      <div class="leg-bar">
+        <div class="leg-sq" style="background:#fff5f5"></div>
+        <div class="leg-sq" style="background:#fee2e2"></div>
+        <div class="leg-sq" style="background:#fecaca"></div>
+        <div class="leg-sq" style="background:#f87171"></div>
+      </div>
+    </div>
     <div id="resumen-content"></div>
   </div>
   <div id="utime" class="utime"></div>
 </div>
 <script>
-const SID='1c7CdxbLI58e6TNya8Ei_fnqAmgSEpqmMUWdlvUd1nVs';
-const KEY='AIzaSyCXaM0fXC-6H-Pz22uRTv52uMe3xtIoLkU';
-let all=[],cur=null,fil='todos';
+var SID='1c7CdxbLI58e6TNya8Ei_fnqAmgSEpqmMUWdlvUd1nVs';
+var KEY='AIzaSyCXaM0fXC-6H-Pz22uRTv52uMe3xtIoLkU';
+var all=[],cur=null,fil='todos',hmOn=true;
 
 function num(v){ if(v===null||v===undefined||v==='') return 0; var n=Number(String(v).trim()); return isNaN(n)?0:n; }
 function fmt(n){ return '$'+Math.round(Math.abs(n)).toLocaleString('es-CL'); }
 function fmtRut(v){ var s=String(v).trim(); return s.endsWith('.0')?s.slice(0,-2):s; }
 function fmtSaldo(n){ if(n<0) return '$'+Math.round(Math.abs(n)).toLocaleString('es-CL'); return '-$'+Math.round(n).toLocaleString('es-CL'); }
-function fmtM(n){ if(n===0) return '<span class="cero">-</span>'; var abs=Math.round(Math.abs(n)); var s=abs>=1000000?(Math.round(abs/100000)/10)+'M':abs>=1000?Math.round(abs/1000)+'K':abs.toString(); return n<0?s:'<span style="color:#16a34a">-'+s+'</span>'; }
+function fmtCell(n){
+  if(n===0) return '<span class="cero">—</span>';
+  var abs=Math.round(Math.abs(n));
+  var s=abs>=1000000?(Math.round(abs/100000)/10)+'M':abs>=1000?Math.round(abs/1000)+'K':abs.toLocaleString('es-CL');
+  return n<0?'<span class="vv">'+s+'</span>':'<span class="pv2">-'+s+'</span>';
+}
+function heatBg(val,max){
+  if(!hmOn||val<=0||max<=0) return '';
+  var r=Math.min(val/max,1);
+  if(r<0.25) return '';
+  if(r<0.5) return 'background:#fff5f5';
+  if(r<0.75) return 'background:#fee2e2';
+  return 'background:#fecaca';
+}
 
-function showTab(tab){
-  document.getElementById('tab-buscar').style.display=tab==='buscar'?'block':'none';
-  document.getElementById('tab-resumen').style.display=tab==='resumen'?'block':'none';
-  document.getElementById('btn-buscar').className='nav-btn'+(tab==='buscar'?' active':'');
-  document.getElementById('btn-resumen').className='nav-btn'+(tab==='resumen'?' active':'');
-  if(tab==='resumen') renderResumen();
+function showTab(t){
+  document.getElementById('tab-buscar').style.display=t==='buscar'?'block':'none';
+  document.getElementById('tab-resumen').style.display=t==='resumen'?'block':'none';
+  document.getElementById('btn-buscar').className='nav-btn'+(t==='buscar'?' active':'');
+  document.getElementById('btn-resumen').className='nav-btn'+(t==='resumen'?' active':'');
+  if(t==='resumen') renderResumen();
+}
+
+function toggleHM(){
+  hmOn=!hmOn;
+  var b=document.getElementById('hm-btn');
+  b.textContent='Mapa de calor: '+(hmOn?'ON':'OFF');
+  b.className='hm-btn'+(hmOn?' on':'');
+  document.getElementById('leg2').style.opacity=hmOn?'1':'0.3';
+  renderResumen();
 }
 
 cargar();
@@ -174,76 +215,72 @@ async function meta(){
 }
 
 function renderResumen(){
-  if(!all.length){document.getElementById('resumen-content').innerHTML='<div class="empty">Cargando datos...</div>';return;}
+  if(!all.length){document.getElementById('resumen-content').innerHTML='<div class="empty">Cargando...</div>';return;}
+  var fv=(document.getElementById('res-filtro').value||'').toLowerCase();
   var VCOLS=['120+','90-120','60-90','30-60','7-30','0-7'];
   var PCOLS=['7-0','30-7'];
   var cats={};
   all.forEach(function(r){
     var cat=r['ATRIB_1']||'Sin categoría';
-    var cl=r['Clasifica vcto']||'';
+    var cl=(r['Clasifica vcto']||'').trim();
     var sal=num(r['SALDO']);
-    var est=(r['ESTADO']||'').toUpperCase().trim();
     if(!cats[cat]) cats[cat]={};
     if(!cats[cat][cl]) cats[cat][cl]=0;
     cats[cat][cl]+=sal;
   });
+  var allCols=VCOLS.concat(PCOLS);
+  var catList=Object.keys(cats).filter(function(c){ return fv===''||c.toLowerCase().includes(fv); }).sort();
 
   var totCol={};
-  var allCols=VCOLS.concat(PCOLS);
   allCols.forEach(function(c){totCol[c]=0;});
-  totCol['TOT_V']=0; totCol['TOT_P']=0; totCol['TOT']=0;
+  var gtV=0,gtP=0;
 
-  var catList=Object.keys(cats).sort();
-  var rows=catList.map(function(cat){
+  var rowData=catList.map(function(cat){
     var totV=0,totP=0;
-    VCOLS.forEach(function(c){totV+=cats[cat][c]||0;});
-    PCOLS.forEach(function(c){totP+=cats[cat][c]||0;});
-    VCOLS.forEach(function(c){totCol[c]+=(cats[cat][c]||0);});
-    PCOLS.forEach(function(c){totCol[c]+=(cats[cat][c]||0);});
-    totCol['TOT_V']+=totV; totCol['TOT_P']+=totP; totCol['TOT']+=(totV+totP);
-    return {cat:cat,cols:cats[cat],totV:totV,totP:totP,tot:totV+totP};
+    var cols={};
+    VCOLS.forEach(function(c){ var v=cats[cat][c]||0; cols[c]=v; totV+=v; totCol[c]+=v; });
+    PCOLS.forEach(function(c){ var v=cats[cat][c]||0; cols[c]=v; totP+=v; totCol[c]+=v; });
+    gtV+=totV; gtP+=totP;
+    return {cat:cat,cols:cols,totV:totV,totP:totP,tot:totV+totP};
   });
-  rows.sort(function(a,b){return a.tot-b.tot;});
+  rowData.sort(function(a,b){return a.tot-b.tot;});
 
-  var catLabelMap={
-    '01.Transporte':'Transporte','02.Servicios Basicos':'Serv.Básicos',
-    '03.M.Primas e Insumos':'M.Primas','04.Mantenciones':'Mantenciones',
-    '05.Administrativos':'Administrativos','06.Comerciales':'Comerciales',
-    '07.Personal EMSA':'Personal','08.Fabricacion':'Fabricación',
-    '09.Sistemas':'Sistemas','10.Marketing':'Marketing',
-    '11.Financieros':'Financieros','12.Asesorias':'Asesorías',
-    '16.Ambientales':'Ambientales','17.Bodega':'Bodega'
-  };
+  var maxV=0;
+  rowData.forEach(function(rd){ VCOLS.forEach(function(c){ if(rd.cols[c]<0&&Math.abs(rd.cols[c])>maxV) maxV=Math.abs(rd.cols[c]); }); });
 
-  var h='<div class="resumen-title">Deuda por categoría y vencimiento <span>en miles $</span></div>';
-  h+='<div class="resumen-wrap"><table class="pivot"><thead><tr>';
-  h+='<th>Categoría</th>';
-  h+='<th class="sep-th v-col" colspan="'+VCOLS.length+'">VENCIDO</th>';
-  h+='<th class="sep-th p-col" colspan="'+PCOLS.length+'">POR VENCER</th>';
-  h+='<th>Total</th></tr><tr><th></th>';
-  VCOLS.forEach(function(c){h+='<th class="v-col">'+c+'</th>';});
-  PCOLS.forEach(function(c){h+='<th class="p-col">'+c+'</th>';});
-  h+='<th class="t-col">Total</th></tr></thead><tbody>';
+  var h='<div class="tbl-wrap"><table class="piv"><thead><tr>';
+  h+='<th rowspan="2">Categoría</th>';
+  h+='<th colspan="'+VCOLS.length+'" style="text-align:center;border-bottom:1px solid rgba(255,255,255,0.15)">VENCIDO</th>';
+  h+='<th colspan="'+PCOLS.length+'" style="text-align:center;border-bottom:1px solid rgba(255,255,255,0.15)">POR VENCER</th>';
+  h+='<th rowspan="2">Total</th></tr><tr>';
+  VCOLS.forEach(function(c){h+='<th class="vh">'+c+'</th>';});
+  PCOLS.forEach(function(c){h+='<th class="ph">'+c+'</th>';});
+  h+='</tr></thead><tbody>';
 
-  rows.forEach(function(row){
-    var label=catLabelMap[row.cat]||row.cat;
-    h+='<tr><td>'+label+'</td>';
-    VCOLS.forEach(function(c){var v=row.cols[c]||0;h+='<td class="v-col">'+fmtM(v)+'</td>';});
-    PCOLS.forEach(function(c){var v=row.cols[c]||0;h+='<td class="p-col">'+fmtM(v)+'</td>';});
-    h+='<td class="t-col">'+fmtM(row.tot)+'</td></tr>';
+  rowData.forEach(function(rd){
+    h+='<tr><td>'+rd.cat+'</td>';
+    VCOLS.forEach(function(c){
+      var v=rd.cols[c]||0;
+      var bg=v<0?heatBg(Math.abs(v),maxV):'';
+      h+='<td'+(bg?' style="'+bg+'"':'')+'>'+fmtCell(v)+'</td>';
+    });
+    PCOLS.forEach(function(c){
+      var v=rd.cols[c]||0;
+      h+='<td>'+fmtCell(v)+'</td>';
+    });
+    h+='<td class="tv">'+fmtCell(rd.tot)+'</td></tr>';
   });
 
   h+='<tr><td>TOTAL</td>';
-  VCOLS.forEach(function(c){h+='<td class="v-col">'+fmtM(totCol[c])+'</td>';});
-  PCOLS.forEach(function(c){h+='<td class="p-col">'+fmtM(totCol[c])+'</td>';});
-  h+='<td class="t-col">'+fmtM(totCol['TOT'])+'</td></tr>';
+  VCOLS.forEach(function(c){h+='<td class="vv"><b>'+fmtCell(totCol[c])+'</b></td>';});
+  PCOLS.forEach(function(c){h+='<td class="pv2"><b>'+fmtCell(totCol[c])+'</b></td>';});
+  h+='<td class="tv">'+fmtCell(gtV+gtP)+'</td></tr>';
   h+='</tbody></table></div>';
 
-  var tV=totCol['TOT_V'], tP=totCol['TOT_P'], tT=totCol['TOT'];
-  h+='<div class="grid" style="margin-top:12px">'+
-    '<div class="card"><div class="lbl">Total Vencido</div><div class="amt r">'+fmt(tV)+'</div></div>'+
-    '<div class="card"><div class="lbl">Por Vencer</div><div class="amt" style="color:#1d4ed8">'+fmt(tP)+'</div></div>'+
-    '<div class="card" style="grid-column:1/-1"><div class="lbl">Deuda Total</div><div class="amt r">'+fmt(tT)+'</div></div>'+
+  h+='<div class="grid3">'+
+    '<div class="card"><div class="lbl">Total Vencido</div><div class="amt r">'+fmt(gtV)+'</div></div>'+
+    '<div class="card"><div class="lbl">Por Vencer</div><div class="amt g">'+fmt(gtP)+'</div></div>'+
+    '<div class="card"><div class="lbl">Deuda Total</div><div class="amt r">'+fmt(gtV+gtP)+'</div></div>'+
   '</div>';
 
   document.getElementById('resumen-content').innerHTML=h;
@@ -309,16 +346,14 @@ function render(rows){
   var tT=rows.reduce(function(s,r){return s+num(r['SALDO']);},0);
   var tV=venc.reduce(function(s,r){return s+num(r['SALDO']);},0);
   var tP=pv.reduce(function(s,r){return s+num(r['SALDO']);},0);
-
   var h='<div class="ph"><div class="nm">'+nm+'</div><div class="rt">RUT: '+rt+'</div>'+(cd?'<div class="cd">'+cd+'</div>':'')+'</div>'+
-  '<div class="grid">'+
+  '<div class="grid2">'+
   '<div class="card"><div class="lbl">Total Deuda</div><div class="amt r">'+fmt(tT)+'</div><div class="sub2">'+rows.length+' docs</div></div>'+
   '<div class="card"><div class="lbl">Vencido</div><div class="amt o">'+fmt(tV)+'</div><div class="sub2">'+venc.length+' docs</div></div>'+
   '<div class="card"><div class="lbl">Por Vencer</div><div class="amt g">'+fmt(tP)+'</div><div class="sub2">'+pv.length+' docs</div></div>'+
   '<div class="card"><div class="lbl">Documentos</div><div class="amt">'+rows.length+'</div><div class="sub2">total</div></div>'+
   '</div>'+
   '<div class="leyenda"><div class="ley-item"><div class="ley-dot r"></div> Factura/deuda</div><div class="ley-item"><div class="ley-dot g"></div> Anticipo (resta)</div></div>';
-
   if(venc.length&&(fil==='todos'||fil==='VENCIDO')){
     h+='<div class="stitle" style="margin-top:4px">Vencidos ('+venc.length+')</div>';
     venc.sort(function(a,b){return num(a['DIAS DE ESTADO'])-num(b['DIAS DE ESTADO']);});
