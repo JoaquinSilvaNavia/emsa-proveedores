@@ -76,11 +76,12 @@
   .res-group { display: flex; flex-direction: column; gap: 4px; }
   .res-label { font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
   .res-input { padding: 8px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 13px; background: white; width: 100%; }
-  .res-input:focus { outline: none; border-color: #2563eb; }
-  .res-input.excl:focus { border-color: #dc2626; }
+  .res-input:focus { outline: none; border-color: #dc2626; }
   .excl-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; min-height: 4px; }
-  .excl-tag { display: flex; align-items: center; gap: 4px; background: #fee2e2; color: #b91c1c; border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 600; }
-  .excl-tag button { background: none; border: none; cursor: pointer; color: #b91c1c; font-size: 13px; padding: 0; line-height: 1; font-weight: 700; }
+  .excl-tag { display: flex; align-items: center; gap: 4px; border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 600; }
+  .excl-tag.prov { background: #fee2e2; color: #b91c1c; }
+  .excl-tag.cat { background: #fef3c7; color: #92400e; }
+  .excl-tag button { background: none; border: none; cursor: pointer; font-size: 13px; padding: 0; line-height: 1; font-weight: 700; color: inherit; }
   .hm-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
   .hm-btn { padding: 7px 13px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; background: white; color: #64748b; }
   .hm-btn.on { border-color: #1a3a5c; color: #1a3a5c; background: #eef2f7; }
@@ -135,13 +136,14 @@
   <div id="tab-resumen" style="display:none">
     <div class="res-filters">
       <div class="res-group">
-        <div class="res-label">Filtrar categoría</div>
-        <input class="res-input" type="text" id="res-filtro" placeholder="Ej: Transporte..." oninput="renderResumen()"/>
+        <div class="res-label">Excluir proveedor</div>
+        <input class="res-input" type="text" id="res-excl-prov" placeholder="Ej: Russfin..." onkeydown="onExclKey(event,'prov')"/>
+        <div class="excl-tags" id="tags-prov"></div>
       </div>
       <div class="res-group">
-        <div class="res-label">Excluir proveedor</div>
-        <input class="res-input excl" type="text" id="res-excl" placeholder="Ej: Russfin..." onkeydown="onExclKey(event)"/>
-        <div class="excl-tags" id="excl-tags"></div>
+        <div class="res-label">Excluir categoría</div>
+        <input class="res-input" type="text" id="res-excl-cat" placeholder="Ej: Caja Chica..." onkeydown="onExclKey(event,'cat')"/>
+        <div class="excl-tags" id="tags-cat"></div>
       </div>
     </div>
     <div class="hm-row">
@@ -164,7 +166,7 @@
 var SID='1c7CdxbLI58e6TNya8Ei_fnqAmgSEpqmMUWdlvUd1nVs';
 var KEY='AIzaSyCXaM0fXC-6H-Pz22uRTv52uMe3xtIoLkU';
 var all=[],cur=null,fil='todos',hmOn=true;
-var exclList=[];
+var exclProv=[],exclCat=[];
 
 function num(v){ if(v===null||v===undefined||v==='') return 0; var n=Number(String(v).trim()); return isNaN(n)?0:n; }
 function fmt(n){ return '$'+Math.round(Math.abs(n)).toLocaleString('es-CL'); }
@@ -184,37 +186,39 @@ function heatBg(val,max){
   if(r<0.75) return 'background:#fee2e2';
   return 'background:#fecaca';
 }
-function isExcluded(nombre){
-  if(!exclList.length) return false;
-  var n=(nombre||'').toLowerCase();
-  return exclList.some(function(e){ return n.includes(e); });
-}
+function isExclProv(nombre){ var n=(nombre||'').toLowerCase(); return exclProv.some(function(e){return n.includes(e);}); }
+function isExclCat(cat){ var c=(cat||'').toLowerCase(); return exclCat.some(function(e){return c.includes(e);}); }
 
-function onExclKey(e){
-  if(e.key==='Enter'||e.key===','){
+function onExclKey(e,tipo){
+  if(e.key==='Enter'){
     e.preventDefault();
-    var v=document.getElementById('res-excl').value.trim().replace(/,$/,'').trim();
-    if(v&&!exclList.includes(v.toLowerCase())){
-      exclList.push(v.toLowerCase());
-      document.getElementById('res-excl').value='';
-      renderTags();
+    var id=tipo==='prov'?'res-excl-prov':'res-excl-cat';
+    var v=document.getElementById(id).value.trim();
+    if(!v) return;
+    var list=tipo==='prov'?exclProv:exclCat;
+    if(!list.includes(v.toLowerCase())){
+      list.push(v.toLowerCase());
+      document.getElementById(id).value='';
+      renderTags(tipo);
       renderResumen();
     }
   }
 }
 
-function removeExcl(i){
-  exclList.splice(i,1);
-  renderTags();
+function removeExcl(tipo,i){
+  if(tipo==='prov') exclProv.splice(i,1);
+  else exclCat.splice(i,1);
+  renderTags(tipo);
   renderResumen();
 }
 
-function renderTags(){
-  var h='';
-  exclList.forEach(function(e,i){
-    h+='<div class="excl-tag">'+e+'<button onclick="removeExcl('+i+')">×</button></div>';
-  });
-  document.getElementById('excl-tags').innerHTML=h;
+function renderTags(tipo){
+  var list=tipo==='prov'?exclProv:exclCat;
+  var cls=tipo==='prov'?'prov':'cat';
+  var id=tipo==='prov'?'tags-prov':'tags-cat';
+  document.getElementById(id).innerHTML=list.map(function(e,i){
+    return '<div class="excl-tag '+cls+'">'+e+'<button onclick="removeExcl(\''+tipo+'\','+i+')">×</button></div>';
+  }).join('');
 }
 
 function showTab(t){
@@ -264,14 +268,15 @@ async function meta(){
 
 function renderResumen(){
   if(!all.length){document.getElementById('resumen-content').innerHTML='<div class="empty">Cargando...</div>';return;}
-  var fv=(document.getElementById('res-filtro').value||'').toLowerCase();
   var VCOLS=['120+','90-120','60-90','30-60','7-30','0-7'];
   var PCOLS=['7-0','30-7'];
   var cats={};
-  var exclCount=0;
+  var exclProvCount=0,exclCatRows=0;
+
   all.forEach(function(r){
-    if(isExcluded(r['NOMBRE O RAZON SOCIAL'])){ exclCount++; return; }
+    if(isExclProv(r['NOMBRE O RAZON SOCIAL'])){ exclProvCount++; return; }
     var cat=r['ATRIB_1']||'Sin categoría';
+    if(isExclCat(cat)){ exclCatRows++; return; }
     var cl=(r['Clasifica vcto']||'').trim();
     var sal=num(r['SALDO']);
     if(!cats[cat]) cats[cat]={};
@@ -279,10 +284,9 @@ function renderResumen(){
     cats[cat][cl]+=sal;
   });
 
-  var catList=Object.keys(cats).filter(function(c){ return fv===''||c.toLowerCase().includes(fv); }).sort();
+  var catList=Object.keys(cats).sort();
   var totCol={};
-  var allCols=VCOLS.concat(PCOLS);
-  allCols.forEach(function(c){totCol[c]=0;});
+  VCOLS.concat(PCOLS).forEach(function(c){totCol[c]=0;});
   var gtV=0,gtP=0;
 
   var rowData=catList.map(function(cat){
@@ -297,10 +301,10 @@ function renderResumen(){
   var maxV=0;
   rowData.forEach(function(rd){ VCOLS.forEach(function(c){ if(rd.cols[c]<0&&Math.abs(rd.cols[c])>maxV) maxV=Math.abs(rd.cols[c]); }); });
 
-  var h='';
-  if(exclCount>0&&exclList.length>0){
-    h+='<div class="excl-notice">Se excluyeron '+exclCount+' documentos de: '+exclList.join(', ')+'</div>';
-  }
+  var notices=[];
+  if(exclProvCount>0&&exclProv.length) notices.push(exclProvCount+' docs de proveedores: '+exclProv.join(', '));
+  if(exclCatRows>0&&exclCat.length) notices.push(exclCatRows+' docs de categorías: '+exclCat.join(', '));
+  var h=notices.length?'<div class="excl-notice">Excluidos: '+notices.join(' | ')+'</div>':'';
 
   h+='<div class="tbl-wrap"><table class="piv"><thead><tr>';
   h+='<th rowspan="2">Categoría</th>';
