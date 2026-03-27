@@ -14,7 +14,10 @@
   .dot.on { background: #4ade80; box-shadow: 0 0 6px #4ade80; animation: pulse 2s infinite; }
   .dot.err { background: #f87171; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-  .wrap { max-width: 480px; margin: 0 auto; padding: 14px; }
+  .nav { display: flex; background: #12294a; }
+  .nav-btn { flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.6); cursor: pointer; border-bottom: 3px solid transparent; }
+  .nav-btn.active { color: white; border-bottom-color: #4ade80; }
+  .wrap { max-width: 600px; margin: 0 auto; padding: 14px; }
   .sbox { background: white; border-radius: 12px; padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
   .sbox label { font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 8px; }
   .srow { display: flex; gap: 8px; }
@@ -71,6 +74,23 @@
   .ley-dot { width: 10px; height: 10px; border-radius: 2px; }
   .ley-dot.r { background: #dc2626; }
   .ley-dot.g { background: #16a34a; }
+  /* RESUMEN */
+  .resumen-wrap { overflow-x: auto; margin-bottom: 14px; }
+  .resumen-title { font-size: 13px; font-weight: 700; color: #1a3a5c; margin-bottom: 10px; padding: 12px 14px; background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center; }
+  .resumen-title span { font-size: 11px; color: #64748b; font-weight: 400; }
+  table.pivot { width: 100%; border-collapse: collapse; font-size: 11px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  table.pivot th { background: #1a3a5c; color: white; padding: 8px 6px; text-align: right; font-weight: 600; white-space: nowrap; font-size: 10px; }
+  table.pivot th:first-child { text-align: left; min-width: 110px; }
+  table.pivot td { padding: 7px 6px; text-align: right; border-bottom: 1px solid #f1f5f9; font-size: 10px; white-space: nowrap; }
+  table.pivot td:first-child { text-align: left; font-weight: 600; color: #334155; font-size: 10px; }
+  table.pivot tr:last-child td { border-bottom: none; background: #f8fafc; font-weight: 700; font-size: 11px; }
+  table.pivot tr:hover td { background: #f8fafc; }
+  table.pivot tr:last-child td:first-child { color: #1a3a5c; }
+  .v-col { color: #dc2626; }
+  .p-col { color: #1d4ed8; }
+  .t-col { color: #0f172a; font-weight: 700; }
+  .sep-th { background: #0f2942 !important; font-size: 9px; letter-spacing: 0.3px; }
+  .cero { color: #cbd5e1; }
 </style>
 </head>
 <body>
@@ -78,21 +98,32 @@
   <div><div class="logo">EMSA</div><div class="sub">Proveedores x Pagar</div></div>
   <div class="dot" id="dot"></div>
 </header>
+<div class="nav">
+  <div class="nav-btn active" id="btn-buscar" onclick="showTab('buscar')">Buscar proveedor</div>
+  <div class="nav-btn" id="btn-resumen" onclick="showTab('resumen')">Resumen general</div>
+</div>
 <div class="wrap">
-  <div class="sbox">
-    <label>Buscar proveedor</label>
-    <div class="srow">
-      <input type="text" id="q" placeholder="Nombre o RUT..." oninput="onQ()" onkeydown="if(event.key==='Enter')buscar()"/>
-      <button onclick="buscar()">→</button>
+  <!-- TAB BUSCAR -->
+  <div id="tab-buscar">
+    <div class="sbox">
+      <label>Buscar proveedor</label>
+      <div class="srow">
+        <input type="text" id="q" placeholder="Nombre o RUT..." oninput="onQ()" onkeydown="if(event.key==='Enter')buscar()"/>
+        <button onclick="buscar()">→</button>
+      </div>
     </div>
+    <div id="sugg" class="sugg" style="display:none"></div>
+    <div class="filters" id="flt" style="display:none">
+      <button class="fbtn active" onclick="setF('todos',this)">Todos</button>
+      <button class="fbtn venc" onclick="setF('VENCIDO',this)">Vencidos</button>
+      <button class="fbtn pv" onclick="setF('POR VENCER',this)">Por vencer</button>
+    </div>
+    <div id="content"></div>
   </div>
-  <div id="sugg" class="sugg" style="display:none"></div>
-  <div class="filters" id="flt" style="display:none">
-    <button class="fbtn active" onclick="setF('todos',this)">Todos</button>
-    <button class="fbtn venc" onclick="setF('VENCIDO',this)">Vencidos</button>
-    <button class="fbtn pv" onclick="setF('POR VENCER',this)">Por vencer</button>
+  <!-- TAB RESUMEN -->
+  <div id="tab-resumen" style="display:none">
+    <div id="resumen-content"></div>
   </div>
-  <div id="content"></div>
   <div id="utime" class="utime"></div>
 </div>
 <script>
@@ -100,18 +131,18 @@ const SID='1c7CdxbLI58e6TNya8Ei_fnqAmgSEpqmMUWdlvUd1nVs';
 const KEY='AIzaSyCXaM0fXC-6H-Pz22uRTv52uMe3xtIoLkU';
 let all=[],cur=null,fil='todos';
 
-function num(v){
-  if(v===null||v===undefined||v==='') return 0;
-  var n=Number(String(v).trim());
-  return isNaN(n)?0:n;
-}
+function num(v){ if(v===null||v===undefined||v==='') return 0; var n=Number(String(v).trim()); return isNaN(n)?0:n; }
 function fmt(n){ return '$'+Math.round(Math.abs(n)).toLocaleString('es-CL'); }
 function fmtRut(v){ var s=String(v).trim(); return s.endsWith('.0')?s.slice(0,-2):s; }
-function fmtSaldo(n){
-  // Negativo = deuda, mostrar positivo en rojo
-  // Positivo = anticipo, mostrar con signo negativo en verde (resta a la deuda)
-  if(n<0) return '$'+Math.round(Math.abs(n)).toLocaleString('es-CL');
-  return '-$'+Math.round(n).toLocaleString('es-CL');
+function fmtSaldo(n){ if(n<0) return '$'+Math.round(Math.abs(n)).toLocaleString('es-CL'); return '-$'+Math.round(n).toLocaleString('es-CL'); }
+function fmtM(n){ if(n===0) return '<span class="cero">-</span>'; var abs=Math.round(Math.abs(n)); var s=abs>=1000000?(Math.round(abs/100000)/10)+'M':abs>=1000?Math.round(abs/1000)+'K':abs.toString(); return n<0?s:'<span style="color:#16a34a">-'+s+'</span>'; }
+
+function showTab(tab){
+  document.getElementById('tab-buscar').style.display=tab==='buscar'?'block':'none';
+  document.getElementById('tab-resumen').style.display=tab==='resumen'?'block':'none';
+  document.getElementById('btn-buscar').className='nav-btn'+(tab==='buscar'?' active':'');
+  document.getElementById('btn-resumen').className='nav-btn'+(tab==='resumen'?' active':'');
+  if(tab==='resumen') renderResumen();
 }
 
 cargar();
@@ -122,7 +153,7 @@ async function cargar(){
     var r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SID+'/values/datos!A:AZ?key='+KEY);
     if(!r.ok) throw new Error('HTTP '+r.status);
     var d=await r.json();
-    if(!d.values||d.values.length<2){show('<div class="err">Sin datos. Ejecuta el script Python.</div>');return;}
+    if(!d.values||d.values.length<2){show('<div class="err">Sin datos.</div>');return;}
     var h=d.values[0];
     all=d.values.slice(1).map(function(row){var o={};h.forEach(function(k,i){o[k]=row[i]!==undefined?row[i]:'';});return o;});
     document.getElementById('dot').className='dot on';
@@ -142,6 +173,82 @@ async function meta(){
   }catch(e){}
 }
 
+function renderResumen(){
+  if(!all.length){document.getElementById('resumen-content').innerHTML='<div class="empty">Cargando datos...</div>';return;}
+  var VCOLS=['120+','90-120','60-90','30-60','7-30','0-7'];
+  var PCOLS=['7-0','30-7'];
+  var cats={};
+  all.forEach(function(r){
+    var cat=r['ATRIB_1']||'Sin categoría';
+    var cl=r['Clasifica vcto']||'';
+    var sal=num(r['SALDO']);
+    var est=(r['ESTADO']||'').toUpperCase().trim();
+    if(!cats[cat]) cats[cat]={};
+    if(!cats[cat][cl]) cats[cat][cl]=0;
+    cats[cat][cl]+=sal;
+  });
+
+  var totCol={};
+  var allCols=VCOLS.concat(PCOLS);
+  allCols.forEach(function(c){totCol[c]=0;});
+  totCol['TOT_V']=0; totCol['TOT_P']=0; totCol['TOT']=0;
+
+  var catList=Object.keys(cats).sort();
+  var rows=catList.map(function(cat){
+    var totV=0,totP=0;
+    VCOLS.forEach(function(c){totV+=cats[cat][c]||0;});
+    PCOLS.forEach(function(c){totP+=cats[cat][c]||0;});
+    VCOLS.forEach(function(c){totCol[c]+=(cats[cat][c]||0);});
+    PCOLS.forEach(function(c){totCol[c]+=(cats[cat][c]||0);});
+    totCol['TOT_V']+=totV; totCol['TOT_P']+=totP; totCol['TOT']+=(totV+totP);
+    return {cat:cat,cols:cats[cat],totV:totV,totP:totP,tot:totV+totP};
+  });
+  rows.sort(function(a,b){return a.tot-b.tot;});
+
+  var catLabelMap={
+    '01.Transporte':'Transporte','02.Servicios Basicos':'Serv.Básicos',
+    '03.M.Primas e Insumos':'M.Primas','04.Mantenciones':'Mantenciones',
+    '05.Administrativos':'Administrativos','06.Comerciales':'Comerciales',
+    '07.Personal EMSA':'Personal','08.Fabricacion':'Fabricación',
+    '09.Sistemas':'Sistemas','10.Marketing':'Marketing',
+    '11.Financieros':'Financieros','12.Asesorias':'Asesorías',
+    '16.Ambientales':'Ambientales','17.Bodega':'Bodega'
+  };
+
+  var h='<div class="resumen-title">Deuda por categoría y vencimiento <span>en miles $</span></div>';
+  h+='<div class="resumen-wrap"><table class="pivot"><thead><tr>';
+  h+='<th>Categoría</th>';
+  h+='<th class="sep-th v-col" colspan="'+VCOLS.length+'">VENCIDO</th>';
+  h+='<th class="sep-th p-col" colspan="'+PCOLS.length+'">POR VENCER</th>';
+  h+='<th>Total</th></tr><tr><th></th>';
+  VCOLS.forEach(function(c){h+='<th class="v-col">'+c+'</th>';});
+  PCOLS.forEach(function(c){h+='<th class="p-col">'+c+'</th>';});
+  h+='<th class="t-col">Total</th></tr></thead><tbody>';
+
+  rows.forEach(function(row){
+    var label=catLabelMap[row.cat]||row.cat;
+    h+='<tr><td>'+label+'</td>';
+    VCOLS.forEach(function(c){var v=row.cols[c]||0;h+='<td class="v-col">'+fmtM(v)+'</td>';});
+    PCOLS.forEach(function(c){var v=row.cols[c]||0;h+='<td class="p-col">'+fmtM(v)+'</td>';});
+    h+='<td class="t-col">'+fmtM(row.tot)+'</td></tr>';
+  });
+
+  h+='<tr><td>TOTAL</td>';
+  VCOLS.forEach(function(c){h+='<td class="v-col">'+fmtM(totCol[c])+'</td>';});
+  PCOLS.forEach(function(c){h+='<td class="p-col">'+fmtM(totCol[c])+'</td>';});
+  h+='<td class="t-col">'+fmtM(totCol['TOT'])+'</td></tr>';
+  h+='</tbody></table></div>';
+
+  var tV=totCol['TOT_V'], tP=totCol['TOT_P'], tT=totCol['TOT'];
+  h+='<div class="grid" style="margin-top:12px">'+
+    '<div class="card"><div class="lbl">Total Vencido</div><div class="amt r">'+fmt(tV)+'</div></div>'+
+    '<div class="card"><div class="lbl">Por Vencer</div><div class="amt" style="color:#1d4ed8">'+fmt(tP)+'</div></div>'+
+    '<div class="card" style="grid-column:1/-1"><div class="lbl">Deuda Total</div><div class="amt r">'+fmt(tT)+'</div></div>'+
+  '</div>';
+
+  document.getElementById('resumen-content').innerHTML=h;
+}
+
 function onQ(){
   var q=document.getElementById('q').value.trim().toLowerCase();
   if(q.length<2){hideSugg();return;}
@@ -149,10 +256,7 @@ function onQ(){
   all.forEach(function(r){
     var n=(r['NOMBRE O RAZON SOCIAL']||'').toLowerCase();
     var rt=fmtRut(r['RUT COMPLETO']||r['RUT']||'').toLowerCase();
-    if(n.includes(q)||rt.includes(q)){
-      var k=fmtRut(r['RUT COMPLETO']||r['RUT']||'');
-      if(!m[k])m[k]={n:r['NOMBRE O RAZON SOCIAL']||'',k:k};
-    }
+    if(n.includes(q)||rt.includes(q)){var k=fmtRut(r['RUT COMPLETO']||r['RUT']||'');if(!m[k])m[k]={n:r['NOMBRE O RAZON SOCIAL']||'',k:k};}
   });
   var l=Object.values(m).slice(0,6);
   if(!l.length){hideSugg();return;}
@@ -213,10 +317,7 @@ function render(rows){
   '<div class="card"><div class="lbl">Por Vencer</div><div class="amt g">'+fmt(tP)+'</div><div class="sub2">'+pv.length+' docs</div></div>'+
   '<div class="card"><div class="lbl">Documentos</div><div class="amt">'+rows.length+'</div><div class="sub2">total</div></div>'+
   '</div>'+
-  '<div class="leyenda">'+
-  '<div class="ley-item"><div class="ley-dot r"></div> Factura/deuda</div>'+
-  '<div class="ley-item"><div class="ley-dot g"></div> Anticipo (resta)</div>'+
-  '</div>';
+  '<div class="leyenda"><div class="ley-item"><div class="ley-dot r"></div> Factura/deuda</div><div class="ley-item"><div class="ley-dot g"></div> Anticipo (resta)</div></div>';
 
   if(venc.length&&(fil==='todos'||fil==='VENCIDO')){
     h+='<div class="stitle" style="margin-top:4px">Vencidos ('+venc.length+')</div>';
@@ -238,17 +339,10 @@ function docHtml(r,estado){
   var esVenc=estado==='VENCIDO';
   var clase=esAnticipo?'anticipo':'deuda';
   var clSaldo=esAnticipo?'verde':'rojo';
-
   var bc,bt;
-  if(esAnticipo){
-    bc='bant'; bt='Anticipo';
-  } else if(esVenc){
-    bt='Vencido hace '+dias+'d';
-    bc=dias<=7?'b7':dias<=30?'b30':dias<=60?'b60':'b90';
-  } else {
-    bc='b0'; bt='Vence en '+dias+'d';
-  }
-
+  if(esAnticipo){bc='bant';bt='Anticipo';}
+  else if(esVenc){bt='Vencido hace '+dias+'d';bc=dias<=7?'b7':dias<=30?'b30':dias<=60?'b60':'b90';}
+  else{bc='b0';bt='Vence en '+dias+'d';}
   var cl=r['Clasifica vcto']||'';
   return '<div class="ditem '+clase+'">'+
     '<div class="drow"><div><div class="dnum">Doc '+(r['DOCUMENTO']||'')+'</div>'+
