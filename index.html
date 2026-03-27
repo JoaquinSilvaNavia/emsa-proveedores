@@ -38,12 +38,13 @@
   .ph .cd { font-size: 12px; opacity: 0.75; margin-top: 2px; }
   .stitle { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; margin-bottom: 7px; padding-left: 3px; }
   .ditem { background: white; border-radius: 10px; padding: 11px; margin-bottom: 7px; box-shadow: 0 1px 2px rgba(0,0,0,0.06); border-left: 4px solid transparent; }
-  .ditem.v { border-left-color: #dc2626; }
-  .ditem.pv2 { border-left-color: #16a34a; }
+  .ditem.deuda { border-left-color: #dc2626; }
+  .ditem.anticipo { border-left-color: #16a34a; background: #f0fdf4; }
   .drow { display: flex; justify-content: space-between; align-items: flex-start; }
   .dnum { font-size: 13px; font-weight: 700; }
-  .dsal { font-size: 15px; font-weight: 800; color: #dc2626; }
-  .dsal.g { color: #16a34a; }
+  .dsal { font-size: 15px; font-weight: 800; }
+  .dsal.rojo { color: #dc2626; }
+  .dsal.verde { color: #16a34a; }
   .dmeta { font-size: 11px; color: #64748b; margin-top: 3px; }
   .badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 10px; font-weight: 700; margin-top: 5px; }
   .b0 { background: #dcfce7; color: #15803d; }
@@ -51,6 +52,7 @@
   .b30 { background: #fed7aa; color: #c2410c; }
   .b60 { background: #fecaca; color: #b91c1c; }
   .b90 { background: #fee2e2; color: #991b1b; }
+  .bant { background: #dcfce7; color: #15803d; }
   .bx { background: #f1f5f9; color: #64748b; margin-left: 4px; }
   .loading { text-align: center; padding: 40px 20px; color: #64748b; }
   .spin { width: 32px; height: 32px; border: 3px solid #e2e8f0; border-top-color: #2563eb; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 10px; }
@@ -64,6 +66,11 @@
   .si:hover { background: #f1f5f9; }
   .si strong { display: block; font-size: 13px; }
   .si small { color: #64748b; font-size: 11px; }
+  .leyenda { display: flex; gap: 12px; margin-bottom: 10px; font-size: 11px; color: #64748b; padding-left: 4px; }
+  .ley-item { display: flex; align-items: center; gap: 5px; }
+  .ley-dot { width: 10px; height: 10px; border-radius: 2px; }
+  .ley-dot.r { background: #dc2626; }
+  .ley-dot.g { background: #16a34a; }
 </style>
 </head>
 <body>
@@ -95,23 +102,29 @@ let all=[],cur=null,fil='todos';
 
 function num(v){
   if(v===null||v===undefined||v==='') return 0;
-  const n=Number(String(v).trim());
+  var n=Number(String(v).trim());
   return isNaN(n)?0:n;
 }
-const fmt=n=>'$'+Math.round(Math.abs(n)).toLocaleString('es-CL');
-const fmtRut=v=>{ const s=String(v).trim(); return s.endsWith('.0')?s.slice(0,-2):s; };
+function fmt(n){ return '$'+Math.round(Math.abs(n)).toLocaleString('es-CL'); }
+function fmtRut(v){ var s=String(v).trim(); return s.endsWith('.0')?s.slice(0,-2):s; }
+function fmtSaldo(n){
+  // Negativo = deuda, mostrar positivo en rojo
+  // Positivo = anticipo, mostrar con signo negativo en verde (resta a la deuda)
+  if(n<0) return '$'+Math.round(Math.abs(n)).toLocaleString('es-CL');
+  return '-$'+Math.round(n).toLocaleString('es-CL');
+}
 
 cargar();
 
 async function cargar(){
   show('<div class="loading"><div class="spin"></div>Conectando...</div>');
   try{
-    const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SID+'/values/datos!A:AZ?key='+KEY);
+    var r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SID+'/values/datos!A:AZ?key='+KEY);
     if(!r.ok) throw new Error('HTTP '+r.status);
-    const d=await r.json();
+    var d=await r.json();
     if(!d.values||d.values.length<2){show('<div class="err">Sin datos. Ejecuta el script Python.</div>');return;}
-    const h=d.values[0];
-    all=d.values.slice(1).map(row=>{const o={};h.forEach((k,i)=>{o[k]=row[i]!==undefined?row[i]:'';});return o;});
+    var h=d.values[0];
+    all=d.values.slice(1).map(function(row){var o={};h.forEach(function(k,i){o[k]=row[i]!==undefined?row[i]:'';});return o;});
     document.getElementById('dot').className='dot on';
     await meta();
     show('<div class="empty">Busca un proveedor por nombre o RUT<br><small style="color:#94a3b8;margin-top:6px;display:block">'+all.length+' documentos cargados</small></div>');
@@ -123,27 +136,27 @@ async function cargar(){
 
 async function meta(){
   try{
-    const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SID+'/values/meta!A1:A3?key='+KEY);
-    const d=await r.json();
+    var r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SID+'/values/meta!A1:A3?key='+KEY);
+    var d=await r.json();
     if(d.values) document.getElementById('utime').innerHTML='<span>'+(d.values[0]&&d.values[0][0]||'')+'</span> &nbsp;·&nbsp; '+(d.values[1]&&d.values[1][0]||'');
   }catch(e){}
 }
 
 function onQ(){
-  const q=document.getElementById('q').value.trim().toLowerCase();
+  var q=document.getElementById('q').value.trim().toLowerCase();
   if(q.length<2){hideSugg();return;}
-  const m={};
+  var m={};
   all.forEach(function(r){
-    const n=(r['NOMBRE O RAZON SOCIAL']||'').toLowerCase();
-    const rt=fmtRut(r['RUT COMPLETO']||r['RUT']||'').toLowerCase();
+    var n=(r['NOMBRE O RAZON SOCIAL']||'').toLowerCase();
+    var rt=fmtRut(r['RUT COMPLETO']||r['RUT']||'').toLowerCase();
     if(n.includes(q)||rt.includes(q)){
-      const k=fmtRut(r['RUT COMPLETO']||r['RUT']||'');
+      var k=fmtRut(r['RUT COMPLETO']||r['RUT']||'');
       if(!m[k])m[k]={n:r['NOMBRE O RAZON SOCIAL']||'',k:k};
     }
   });
-  const l=Object.values(m).slice(0,6);
+  var l=Object.values(m).slice(0,6);
   if(!l.length){hideSugg();return;}
-  const s=document.getElementById('sugg');
+  var s=document.getElementById('sugg');
   s.style.display='block';
   s.innerHTML=l.map(function(p){return '<div class="si" onclick="selP(\''+p.k+'\')"><strong>'+p.n+'</strong><small>'+p.k+'</small></div>';}).join('');
 }
@@ -152,16 +165,16 @@ function hideSugg(){document.getElementById('sugg').style.display='none';}
 
 function selP(rut){
   hideSugg();
-  const rows=all.filter(function(r){return fmtRut(r['RUT COMPLETO']||r['RUT']||'')===rut;});
+  var rows=all.filter(function(r){return fmtRut(r['RUT COMPLETO']||r['RUT']||'')===rut;});
   if(rows.length) document.getElementById('q').value=rows[0]['NOMBRE O RAZON SOCIAL']||'';
   render(rows);
 }
 
 function buscar(){
   hideSugg();
-  const q=document.getElementById('q').value.trim().toLowerCase();
+  var q=document.getElementById('q').value.trim().toLowerCase();
   if(!q) return;
-  const rows=all.filter(function(r){
+  var rows=all.filter(function(r){
     return (r['NOMBRE O RAZON SOCIAL']||'').toLowerCase().includes(q)||
            fmtRut(r['RUT COMPLETO']||r['RUT']||'').toLowerCase().includes(q);
   });
@@ -199,32 +212,48 @@ function render(rows){
   '<div class="card"><div class="lbl">Vencido</div><div class="amt o">'+fmt(tV)+'</div><div class="sub2">'+venc.length+' docs</div></div>'+
   '<div class="card"><div class="lbl">Por Vencer</div><div class="amt g">'+fmt(tP)+'</div><div class="sub2">'+pv.length+' docs</div></div>'+
   '<div class="card"><div class="lbl">Documentos</div><div class="amt">'+rows.length+'</div><div class="sub2">total</div></div>'+
+  '</div>'+
+  '<div class="leyenda">'+
+  '<div class="ley-item"><div class="ley-dot r"></div> Factura/deuda</div>'+
+  '<div class="ley-item"><div class="ley-dot g"></div> Anticipo (resta)</div>'+
   '</div>';
 
   if(venc.length&&(fil==='todos'||fil==='VENCIDO')){
     h+='<div class="stitle" style="margin-top:4px">Vencidos ('+venc.length+')</div>';
     venc.sort(function(a,b){return num(a['DIAS DE ESTADO'])-num(b['DIAS DE ESTADO']);});
-    venc.forEach(function(r){h+=docHtml(r,'v');});
+    venc.forEach(function(r){h+=docHtml(r,'VENCIDO');});
   }
   if(pv.length&&(fil==='todos'||fil==='POR VENCER')){
     h+='<div class="stitle" style="margin-top:14px">Por Vencer ('+pv.length+')</div>';
     pv.sort(function(a,b){return num(a['DIAS DE ESTADO'])-num(b['DIAS DE ESTADO']);});
-    pv.forEach(function(r){h+=docHtml(r,'pv2');});
+    pv.forEach(function(r){h+=docHtml(r,'POR VENCER');});
   }
   show(h);
 }
 
-function docHtml(r,tipo){
-  var dias=Math.abs(parseInt(r['DIAS DE ESTADO']||0));
-  var esV=tipo==='v';
-  var bc='b0',bt='Vence en '+dias+'d';
-  if(esV){bt='Vencido hace '+dias+'d';bc=dias<=7?'b7':dias<=30?'b30':dias<=60?'b60':'b90';}
+function docHtml(r,estado){
   var sal=num(r['SALDO']);
+  var esAnticipo=sal>0;
+  var dias=Math.abs(parseInt(r['DIAS DE ESTADO']||0));
+  var esVenc=estado==='VENCIDO';
+  var clase=esAnticipo?'anticipo':'deuda';
+  var clSaldo=esAnticipo?'verde':'rojo';
+
+  var bc,bt;
+  if(esAnticipo){
+    bc='bant'; bt='Anticipo';
+  } else if(esVenc){
+    bt='Vencido hace '+dias+'d';
+    bc=dias<=7?'b7':dias<=30?'b30':dias<=60?'b60':'b90';
+  } else {
+    bc='b0'; bt='Vence en '+dias+'d';
+  }
+
   var cl=r['Clasifica vcto']||'';
-  return '<div class="ditem '+tipo+'">'+
+  return '<div class="ditem '+clase+'">'+
     '<div class="drow"><div><div class="dnum">Doc '+(r['DOCUMENTO']||'')+'</div>'+
     '<div class="dmeta">'+(r['GLOSA']||'')+'</div></div>'+
-    '<div class="dsal '+(esV?'':'g')+'">'+fmt(sal)+'</div></div>'+
+    '<div class="dsal '+clSaldo+'">'+fmtSaldo(sal)+'</div></div>'+
     '<div class="dmeta" style="margin-top:5px">Emision: '+(r['FECHA DOC']||'')+' &nbsp; Vence: '+(r['FECHA VENC']||'')+'</div>'+
     '<span class="badge '+bc+'">'+bt+'</span>'+(cl?'<span class="badge bx">'+cl+'</span>':'')+
   '</div>';
