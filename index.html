@@ -106,7 +106,7 @@ cargar();
 async function cargar(){
   show('<div class="loading"><div class="spin"></div>Conectando...</div>');
   try{
-    const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SID+'/values/datos!A:Z?key='+KEY);
+    const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SID+'/values/datos!A:AZ?key='+KEY);
     if(!r.ok) throw new Error('HTTP '+r.status);
     const d=await r.json();
     if(!d.values||d.values.length<2){show('<div class="err">Sin datos. Ejecuta el script Python.</div>');return;}
