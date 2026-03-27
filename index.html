@@ -30,6 +30,7 @@
   .fbtn.venc.active { background: #dc2626; border-color: #dc2626; }
   .fbtn.pv.active { background: #16a34a; border-color: #16a34a; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
   .card { background: white; border-radius: 12px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
   .card .lbl { font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 5px; }
   .card .amt { font-size: 18px; font-weight: 800; }
@@ -50,13 +51,10 @@
   .dsal.verde { color: #16a34a; }
   .dmeta { font-size: 11px; color: #64748b; margin-top: 3px; }
   .badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 10px; font-weight: 700; margin-top: 5px; }
-  .b0 { background: #dcfce7; color: #15803d; }
-  .b7 { background: #fef3c7; color: #b45309; }
-  .b30 { background: #fed7aa; color: #c2410c; }
-  .b60 { background: #fecaca; color: #b91c1c; }
-  .b90 { background: #fee2e2; color: #991b1b; }
-  .bant { background: #dcfce7; color: #15803d; }
-  .bx { background: #f1f5f9; color: #64748b; margin-left: 4px; }
+  .b0{background:#dcfce7;color:#15803d} .b7{background:#fef3c7;color:#b45309}
+  .b30{background:#fed7aa;color:#c2410c} .b60{background:#fecaca;color:#b91c1c}
+  .b90{background:#fee2e2;color:#991b1b} .bant{background:#dcfce7;color:#15803d}
+  .bx{background:#f1f5f9;color:#64748b;margin-left:4px}
   .loading { text-align: center; padding: 40px 20px; color: #64748b; }
   .spin { width: 32px; height: 32px; border: 3px solid #e2e8f0; border-top-color: #2563eb; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 10px; }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -74,11 +72,21 @@
   .ley-dot { width: 10px; height: 10px; border-radius: 2px; }
   .ley-dot.r { background: #dc2626; }
   .ley-dot.g { background: #16a34a; }
-  .res-top { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
-  .res-input { padding: 8px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 13px; background: white; min-width: 180px; flex: 1; }
+  .res-filters { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .res-group { display: flex; flex-direction: column; gap: 4px; }
+  .res-label { font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+  .res-input { padding: 8px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 13px; background: white; width: 100%; }
   .res-input:focus { outline: none; border-color: #2563eb; }
-  .hm-btn { padding: 8px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; background: white; color: #64748b; white-space: nowrap; }
+  .res-input.excl:focus { border-color: #dc2626; }
+  .excl-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; min-height: 4px; }
+  .excl-tag { display: flex; align-items: center; gap: 4px; background: #fee2e2; color: #b91c1c; border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 600; }
+  .excl-tag button { background: none; border: none; cursor: pointer; color: #b91c1c; font-size: 13px; padding: 0; line-height: 1; font-weight: 700; }
+  .hm-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .hm-btn { padding: 7px 13px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; background: white; color: #64748b; }
   .hm-btn.on { border-color: #1a3a5c; color: #1a3a5c; background: #eef2f7; }
+  .leg2 { display: flex; align-items: center; gap: 6px; font-size: 10px; color: #94a3b8; }
+  .leg-bar { display: flex; gap: 2px; }
+  .leg-sq { width: 10px; height: 10px; border-radius: 2px; }
   .tbl-wrap { overflow-x: auto; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 14px; }
   table.piv { width: 100%; border-collapse: collapse; background: white; font-size: 11px; }
   table.piv thead tr:first-child th { background: #1a3a5c; color: white; padding: 8px 7px; font-weight: 600; font-size: 10px; text-align: right; white-space: nowrap; }
@@ -89,16 +97,13 @@
   table.piv .ph { color: #86efac; }
   table.piv tbody td { padding: 7px 7px; text-align: right; border-bottom: 1px solid #f1f5f9; transition: background 0.1s; }
   table.piv tbody td:first-child { text-align: left; font-weight: 600; color: #334155; }
-  table.piv tbody tr:last-child td { background: #f1f5f9; font-weight: 700; border-bottom: none; font-size: 11px; }
+  table.piv tbody tr:last-child td { background: #f1f5f9; font-weight: 700; border-bottom: none; }
   table.piv tbody tr:last-child td:first-child { color: #1a3a5c; }
   .vv { color: #dc2626; }
   .pv2 { color: #16a34a; }
   .tv { color: #0f172a; font-weight: 700; }
   .cero { color: #cbd5e1; }
-  .leg2 { display: flex; align-items: center; gap: 8px; font-size: 10px; color: #94a3b8; margin-bottom: 10px; }
-  .leg-bar { display: flex; gap: 2px; }
-  .leg-sq { width: 12px; height: 12px; border-radius: 2px; }
-  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .excl-notice { font-size: 11px; color: #94a3b8; margin-bottom: 8px; font-style: italic; }
 </style>
 </head>
 <body>
@@ -128,18 +133,28 @@
     <div id="content"></div>
   </div>
   <div id="tab-resumen" style="display:none">
-    <div class="res-top">
-      <input class="res-input" type="text" id="res-filtro" placeholder="Filtrar categoría..." oninput="renderResumen()"/>
-      <button class="hm-btn on" id="hm-btn" onclick="toggleHM()">Mapa de calor: ON</button>
-    </div>
-    <div class="leg2" id="leg2">
-      <span>Intensidad deuda vencida:</span>
-      <div class="leg-bar">
-        <div class="leg-sq" style="background:#fff5f5"></div>
-        <div class="leg-sq" style="background:#fee2e2"></div>
-        <div class="leg-sq" style="background:#fecaca"></div>
-        <div class="leg-sq" style="background:#f87171"></div>
+    <div class="res-filters">
+      <div class="res-group">
+        <div class="res-label">Filtrar categoría</div>
+        <input class="res-input" type="text" id="res-filtro" placeholder="Ej: Transporte..." oninput="renderResumen()"/>
       </div>
+      <div class="res-group">
+        <div class="res-label">Excluir proveedor</div>
+        <input class="res-input excl" type="text" id="res-excl" placeholder="Ej: Russfin..." onkeydown="onExclKey(event)"/>
+        <div class="excl-tags" id="excl-tags"></div>
+      </div>
+    </div>
+    <div class="hm-row">
+      <div class="leg2" id="leg2">
+        <span>Calor deuda:</span>
+        <div class="leg-bar">
+          <div class="leg-sq" style="background:#fff5f5"></div>
+          <div class="leg-sq" style="background:#fee2e2"></div>
+          <div class="leg-sq" style="background:#fecaca"></div>
+          <div class="leg-sq" style="background:#f87171"></div>
+        </div>
+      </div>
+      <button class="hm-btn on" id="hm-btn" onclick="toggleHM()">Mapa de calor: ON</button>
     </div>
     <div id="resumen-content"></div>
   </div>
@@ -149,6 +164,7 @@
 var SID='1c7CdxbLI58e6TNya8Ei_fnqAmgSEpqmMUWdlvUd1nVs';
 var KEY='AIzaSyCXaM0fXC-6H-Pz22uRTv52uMe3xtIoLkU';
 var all=[],cur=null,fil='todos',hmOn=true;
+var exclList=[];
 
 function num(v){ if(v===null||v===undefined||v==='') return 0; var n=Number(String(v).trim()); return isNaN(n)?0:n; }
 function fmt(n){ return '$'+Math.round(Math.abs(n)).toLocaleString('es-CL'); }
@@ -167,6 +183,38 @@ function heatBg(val,max){
   if(r<0.5) return 'background:#fff5f5';
   if(r<0.75) return 'background:#fee2e2';
   return 'background:#fecaca';
+}
+function isExcluded(nombre){
+  if(!exclList.length) return false;
+  var n=(nombre||'').toLowerCase();
+  return exclList.some(function(e){ return n.includes(e); });
+}
+
+function onExclKey(e){
+  if(e.key==='Enter'||e.key===','){
+    e.preventDefault();
+    var v=document.getElementById('res-excl').value.trim().replace(/,$/,'').trim();
+    if(v&&!exclList.includes(v.toLowerCase())){
+      exclList.push(v.toLowerCase());
+      document.getElementById('res-excl').value='';
+      renderTags();
+      renderResumen();
+    }
+  }
+}
+
+function removeExcl(i){
+  exclList.splice(i,1);
+  renderTags();
+  renderResumen();
+}
+
+function renderTags(){
+  var h='';
+  exclList.forEach(function(e,i){
+    h+='<div class="excl-tag">'+e+'<button onclick="removeExcl('+i+')">×</button></div>';
+  });
+  document.getElementById('excl-tags').innerHTML=h;
 }
 
 function showTab(t){
@@ -220,7 +268,9 @@ function renderResumen(){
   var VCOLS=['120+','90-120','60-90','30-60','7-30','0-7'];
   var PCOLS=['7-0','30-7'];
   var cats={};
+  var exclCount=0;
   all.forEach(function(r){
+    if(isExcluded(r['NOMBRE O RAZON SOCIAL'])){ exclCount++; return; }
     var cat=r['ATRIB_1']||'Sin categoría';
     var cl=(r['Clasifica vcto']||'').trim();
     var sal=num(r['SALDO']);
@@ -228,16 +278,15 @@ function renderResumen(){
     if(!cats[cat][cl]) cats[cat][cl]=0;
     cats[cat][cl]+=sal;
   });
-  var allCols=VCOLS.concat(PCOLS);
-  var catList=Object.keys(cats).filter(function(c){ return fv===''||c.toLowerCase().includes(fv); }).sort();
 
+  var catList=Object.keys(cats).filter(function(c){ return fv===''||c.toLowerCase().includes(fv); }).sort();
   var totCol={};
+  var allCols=VCOLS.concat(PCOLS);
   allCols.forEach(function(c){totCol[c]=0;});
   var gtV=0,gtP=0;
 
   var rowData=catList.map(function(cat){
-    var totV=0,totP=0;
-    var cols={};
+    var totV=0,totP=0,cols={};
     VCOLS.forEach(function(c){ var v=cats[cat][c]||0; cols[c]=v; totV+=v; totCol[c]+=v; });
     PCOLS.forEach(function(c){ var v=cats[cat][c]||0; cols[c]=v; totP+=v; totCol[c]+=v; });
     gtV+=totV; gtP+=totP;
@@ -248,7 +297,12 @@ function renderResumen(){
   var maxV=0;
   rowData.forEach(function(rd){ VCOLS.forEach(function(c){ if(rd.cols[c]<0&&Math.abs(rd.cols[c])>maxV) maxV=Math.abs(rd.cols[c]); }); });
 
-  var h='<div class="tbl-wrap"><table class="piv"><thead><tr>';
+  var h='';
+  if(exclCount>0&&exclList.length>0){
+    h+='<div class="excl-notice">Se excluyeron '+exclCount+' documentos de: '+exclList.join(', ')+'</div>';
+  }
+
+  h+='<div class="tbl-wrap"><table class="piv"><thead><tr>';
   h+='<th rowspan="2">Categoría</th>';
   h+='<th colspan="'+VCOLS.length+'" style="text-align:center;border-bottom:1px solid rgba(255,255,255,0.15)">VENCIDO</th>';
   h+='<th colspan="'+PCOLS.length+'" style="text-align:center;border-bottom:1px solid rgba(255,255,255,0.15)">POR VENCER</th>';
@@ -264,16 +318,13 @@ function renderResumen(){
       var bg=v<0?heatBg(Math.abs(v),maxV):'';
       h+='<td'+(bg?' style="'+bg+'"':'')+'>'+fmtCell(v)+'</td>';
     });
-    PCOLS.forEach(function(c){
-      var v=rd.cols[c]||0;
-      h+='<td>'+fmtCell(v)+'</td>';
-    });
+    PCOLS.forEach(function(c){ h+='<td>'+fmtCell(rd.cols[c]||0)+'</td>'; });
     h+='<td class="tv">'+fmtCell(rd.tot)+'</td></tr>';
   });
 
   h+='<tr><td>TOTAL</td>';
-  VCOLS.forEach(function(c){h+='<td class="vv"><b>'+fmtCell(totCol[c])+'</b></td>';});
-  PCOLS.forEach(function(c){h+='<td class="pv2"><b>'+fmtCell(totCol[c])+'</b></td>';});
+  VCOLS.forEach(function(c){h+='<td><b>'+fmtCell(totCol[c])+'</b></td>';});
+  PCOLS.forEach(function(c){h+='<td><b>'+fmtCell(totCol[c])+'</b></td>';});
   h+='<td class="tv">'+fmtCell(gtV+gtP)+'</td></tr>';
   h+='</tbody></table></div>';
 
